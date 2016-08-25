@@ -24,41 +24,52 @@ module Bank
 
     attr_reader :id, :initial_balance, :current_balance, :withdraw, :deposit, :owner, :all_accounts
 
-  def self.all
+    def self.all
 
-    @@all_accounts = {}
+      @@all_accounts = {}
 
-    CSV.open("accounts.csv", 'r').each do |line|
-      id_key = line[0]
-      # line.delete_at(0) < if I need to show everythingb but id
-      @@all_accounts[id_key] = Account.new(line[0], line[1], line[2])
+      CSV.open("accounts.csv", 'r').each do |line|
+        id_key = line[0]
+        # line.delete_at(0) < if I need to show everythingb but id
+        @@all_accounts[id_key] = Account.new(line[0], convert_cents(line[1].to_i),"none", line[2])
+      end
+
+      return @@all_accounts
+
     end
 
-    return @@all_accounts
-  end
+    def self.find(id)
+      all = self.all
+      all.each do |account, details|
+        if id == account
+          return details.user_friendly
+          # ^^ gives storage id
+        end
+      end
+      puts "There is no account by that number."
+    end
 
-    def initialize(id, initial_balance = 0, owner = nil, open_date)
+
+    def initialize(id, initial_balance = 0, owner = nil, open_date = nil)
       @id = id
-      @initial_balance = initial_balance.to_i
+      @current_balance = initial_balance
       @owner = owner
-      @open_date
+      @open_date = open_date
 
-      unless @initial_balance >= 0
+      unless initial_balance >= 0
         raise ArgumentError.new("Initial balances must be 0 or more - you have entered a negative number.\n\n")
       end
 
-      if @initial_balance == ""
-        @initial_balance = 0
+      if initial_balance == ""
+        @current_balance = 0
       end
-
-      @current_balance = @initial_balance # moved up from balance
 
       # puts "\nWelcome to Black Rabbit Bank!\nAccount ID: #{@id}\nInitial Balance: $#{@initial_balance}\n\n"  << HIDDEN DURING TESTING
 
     end
 
     def self.convert_cents(initial_balance)
-      @initial_balance/100.0
+      initial_balance/100.0
     end
 
     def balance
@@ -87,6 +98,10 @@ module Bank
       puts "Address: #{@owner.address}"
     end
 
+    def user_friendly
+      return "\nID: #{@id}, Current Balance: #{@current_balance}, Owner: #{@owner}, Date Account Opened: #{@open_date}.\n\n"
+    end
+
   end
 
   class Owner
@@ -105,10 +120,14 @@ end
 
 # owner1 = Bank::Owner.new("Elle Vargas", "vargas.elle@gmail.com", "Seattle WA")
 
-# account1 = Bank::Account.new("evargas", owner1)
+# account1 = Bank::Account.new("evargas", 5, owner1)
 
-account1 = Bank::Account.all
+account1 = Bank::Account.find("1212")
 puts account1
+
+# account1 = Bank::Account.all
+# puts account1
+
 
 # puts monies << TESTED SUCCESSFULLY
 # puts monies.balance
