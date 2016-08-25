@@ -47,7 +47,6 @@ module Bank
       @@all_accounts = {}
       CSV.open("accounts.csv", 'r').each do |line|
         id_key = line[0]
-        # line.delete_at(0) < if I need to show everythingb but id
         @@all_accounts[id_key] = Account.new(line[0], convert_cents_to_dollars(line[1].to_i), line[2])
       end
       return @@all_accounts.user_friendly # WILL THIS WORK?
@@ -94,6 +93,40 @@ module Bank
   end
 
   class SavingsAccount < Account
+
+    attr_reader :savings_interest, :rate
+
+    def initialize(id, initial_balance = 10, open_date = nil)
+      # super? is this section necessary?
+    end
+
+    def checks_for_negative
+      unless @current_balance >= 10
+        raise ArgumentError.new("Initial balances must be $10 or more - you have entered a number below that.\n\n")
+      end
+    end
+
+    def withdraw(withdraw_amount)
+      if withdraw_amount > (@current_balance - 10)
+        puts "\nYou may not withdraw an amount that removes your minimum $10 balance from your account.\n"
+      else withdraw_amount <= @current_balance
+        @current_balance = @current_balance - withdraw_amount - 2
+        puts "\nYou withdrew $#{withdraw_amount}, including a $2 transaction fee. You know this wouldn't happen at a credit union, right? But we're a bank. We're not your friends. You can't sit at our table - we own that, too.\n"
+      end
+      return balance
+    end
+
+    def add_interest(rate)
+      @rate = (1.87/100)
+      @savings_interest = @current_balance * @rate
+      @current_balance = @savings_interest + @current_balance
+      return @savings_interest_user_friendly
+    end
+
+    def savings_interest_user_friendly
+      return "\nYour savings interest rate is #{@rate} and has earned you $#{@savings_interest}"
+    end
+
   end
 
 
