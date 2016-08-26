@@ -40,20 +40,21 @@ module Bank
     end
 
     def self.convert_cents_to_dollars(current_balance)
-      @current_balance/100.0
+      current_balance/100.0
     end
 
     def self.all
       @@all_accounts = {}
       CSV.open("accounts.csv", 'r').each do |line|
         id_key = line[0]
-        @@all_accounts[id_key] = Account.new(line[0], convert_cents_to_dollars(line[1].to_i), line[2])
+        @@all_accounts[id_key] = Account.new(line[0], Account.convert_cents_to_dollars(line[1].to_i), line[2])
       end
-      return @@all_accounts.user_friendly # WILL THIS WORK?
+      return @@all_accounts
+      #.user_friendly # WILL THIS WORK?
     end
 
     def user_friendly
-      return "\nID: #{@id}, Current Balance: #{@current_balance}, Date Account Opened: #{@open_date}.\n\n"
+      return "\nID: #{@id}, Current Balance: #{@current_balance}, Date Account Opened: #{@open_date}.\n"
     end
 
     def self.find(id)
@@ -92,7 +93,9 @@ module Bank
 
   class CheckingAccount < Account
 
-    attr_reader 
+    attr_reader
+
+
 
   end
 
@@ -116,10 +119,7 @@ module Bank
     end
 
     def withdraw(withdrawal_amount)
-      # minimum_balance = @current_balance - 10 - 2# $10 min + transaction fee of $2
-      # minimum_balance = @current_balance - 10
-
-      if withdrawal_amount > @current_balance - MIN_AND_FEE # $2 transaction fee
+      if withdrawal_amount > @current_balance - MIN_AND_FEE
         puts "\nYou may not withdraw an amount that will remove your minimum $10 balance from your account.\n\nPlease note that your math wasn't necessarily wrong, but we are screwing you over to the tune of $2 per transaction on top of whatever it was you wanted to withdraw, and that probably threw it off.\n"
       else withdrawal_amount <= @current_balance - MIN_AND_FEE
         @current_balance -= withdrawal_amount + TRANSACTION_FEE
@@ -143,14 +143,16 @@ module Bank
 
 end
 
-account1 = Bank::Account.new("999", 5)
-
+# account1 = Bank::Account.new("999", 5)
 
 # account1 = Bank::Account.find("1212")
 # puts account1
 
-# account1 = Bank::Account.all
-# puts account1
+# MAKES THE ACCOUNTS EASY TO READ
+# account1 = Bank::Account.all.each do |id, account|
+#   x = account.user_friendly
+#   puts x
+# end
 
 # account3 = Bank::SavingsAccount.new("999", 100)
 # puts account3.add_interest(1.87)
@@ -166,6 +168,6 @@ account1 = Bank::Account.new("999", 5)
 
 # puts monies
 # puts monies.balance
-puts account1.withdraw(0)
+# puts account1.withdraw(0)
 # puts account1.deposit(2)
 # puts account1.owner_info
