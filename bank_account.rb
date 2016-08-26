@@ -70,31 +70,29 @@ module Bank
       return "\nAccount ID: #{@id}\nCurrent Balance: $#{'%.2f' % @current_balance}\n\n"
     end
 
-    def withdraw(withdraw_amount)
-      if withdraw_amount == 0
-        puts "\nYeah, that's right. Stick it to the man.\n"
-
-      if withdraw_amount > @current_balance
+    def withdraw(withdrawal_amount)
+      if withdrawal_amount == 0
+        puts "\nYeah, protest by withdrawing nothing. You stick it to the man!\n"
+      elsif withdrawal_amount > @current_balance
         puts "\nYou may not withdraw an amount greater than your current balance.\n"
-      else withdraw_amount <= @current_balance
-        @current_balance = @current_balance - withdraw_amount
-        puts "\nYou withdrew $#{withdraw_amount}\n"
+      else withdrawal_amount <= @current_balance
+        @current_balance -= withdrawal_amount
+        puts "\nYou withdrew $#{withdrawal_amount}\n"
       end
       return balance
     end
 
     def deposit(deposit_amount)
-      @current_balance = @current_balance + deposit_amount
+      @current_balance += deposit_amount
       puts "\nYou deposited $#{deposit_amount}\n"
       return balance
     end
 
   end
 
-
   class CheckingAccount < Account
 
-
+    attr_reader 
 
   end
 
@@ -102,35 +100,37 @@ module Bank
 
     attr_reader :savings_interest
 
-    def initialize(id, initial_balance = 10, open_date = nil)
+    MINIMUM_BALANCE = 10
+    TRANSACTION_FEE = 2
+    MIN_AND_FEE = 12
+
+    def initialize(id, initial_balance = MINIMUM_BALANCE, open_date = nil)
       super
       checks_for_negative
     end
 
     def checks_for_negative
-      unless @current_balance >= 10
-        raise ArgumentError.new("Initial balances must be $10 or more - you have entered a number below that.\n\n")
+      unless @current_balance >= MINIMUM_BALANCE
+        raise ArgumentError.new("\nYou must deposit an initial balance of $10.\n\n")
       end
     end
 
-    def withdraw(withdraw_amount)
-      minimum_balance = @current_balance - 12 # $10 min + transaction fee of $2
-      # transaction_fee = 2
-      # # minimum_balance = @current_balance - 10
-      # minimum_balance = 10
+    def withdraw(withdrawal_amount)
+      # minimum_balance = @current_balance - 10 - 2# $10 min + transaction fee of $2
+      # minimum_balance = @current_balance - 10
 
-      if withdraw_amount > minimum_balance # $2 transaction fee
+      if withdrawal_amount > @current_balance - MIN_AND_FEE # $2 transaction fee
         puts "\nYou may not withdraw an amount that will remove your minimum $10 balance from your account.\n\nPlease note that your math wasn't necessarily wrong, but we are screwing you over to the tune of $2 per transaction on top of whatever it was you wanted to withdraw, and that probably threw it off.\n"
-      else withdraw_amount <= minimum_balance
-        @current_balance = @current_balance - withdraw_amount - 2
-        puts "\nYou withdrew $#{withdraw_amount}, including a $2 transaction fee.\n\nYou know this wouldn't happen at a credit union, right?\n\nBut we're a bank. We're not your friends. You can't sit at our table - we own that, too.\n"
+      else withdrawal_amount <= @current_balance - MIN_AND_FEE
+        @current_balance -= withdrawal_amount + TRANSACTION_FEE
+        puts "\nYou withdrew $#{withdrawal_amount + TRANSACTION_FEE}, including a $2 transaction fee.\n\nYou know this wouldn't happen at a credit union, right?\n\nBut we're a bank. We're not your friends. You can't sit at our table - we own that, too.\n"
       end
       return balance
     end
 
     def add_interest(rate)
       @savings_interest = @current_balance * (rate/100)
-      @current_balance = @savings_interest + @current_balance
+      @current_balance += @savings_interest
       return savings_interest_user_friendly
     end
 
@@ -143,7 +143,7 @@ module Bank
 
 end
 
-# account1 = Bank::Account.new("999", 5)
+account1 = Bank::Account.new("999", 5)
 
 
 # account1 = Bank::Account.find("1212")
@@ -152,20 +152,20 @@ end
 # account1 = Bank::Account.all
 # puts account1
 
-account3 = Bank::SavingsAccount.new("999", 100)
+# account3 = Bank::SavingsAccount.new("999", 100)
 # puts account3.add_interest(1.87)
 # puts account3.withdraw(90) # < error message works
-puts account3.withdraw(88) # < working correctly
+# puts account3.withdraw(88) # < working correctly
 
 # got savings working
 # trying to make it so that you can only withdraw in multiples of 20 up in account withdraw method, make sure that 0 is the starter to avoid that error and then make sure withdrawal % 20 = 0
 # make sure you git push origin Wave-3 so you don't overwrite a ton of shit
-# work on checking next
+# work on checking acct next
 
 
 
 # puts monies
 # puts monies.balance
-# puts account1.withdraw(3)
+puts account1.withdraw(0)
 # puts account1.deposit(2)
 # puts account1.owner_info
