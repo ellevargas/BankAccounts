@@ -187,7 +187,6 @@ module Bank
 
   end
 
-
 end
 
 #CREATED NEW ACCOUNT
@@ -211,7 +210,7 @@ end
 # puts account3.withdraw(88) # < working correctly
 
 #TESTS TO ENSURE CHECKING WORKS
-account4 = Bank::CheckingAccount.new("999", 100)
+# account4 = Bank::CheckingAccount.new("999", 100)
 # # puts account4.user_friendly
 # # puts account4.withdraw(99)
 # puts account4.deposit(25)
