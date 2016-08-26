@@ -71,6 +71,9 @@ module Bank
     end
 
     def withdraw(withdraw_amount)
+      if withdraw_amount == 0
+        puts "\nYeah, that's right. Stick it to the man.\n"
+
       if withdraw_amount > @current_balance
         puts "\nYou may not withdraw an amount greater than your current balance.\n"
       else withdraw_amount <= @current_balance
@@ -90,14 +93,18 @@ module Bank
 
 
   class CheckingAccount < Account
+
+
+
   end
 
   class SavingsAccount < Account
 
-    attr_reader :savings_interest, :rate
+    attr_reader :savings_interest
 
     def initialize(id, initial_balance = 10, open_date = nil)
-      # super? is this section necessary?
+      super
+      checks_for_negative
     end
 
     def checks_for_negative
@@ -107,24 +114,28 @@ module Bank
     end
 
     def withdraw(withdraw_amount)
-      if withdraw_amount > (@current_balance - 10)
-        puts "\nYou may not withdraw an amount that removes your minimum $10 balance from your account.\n"
-      else withdraw_amount <= @current_balance
+      minimum_balance = @current_balance - 12 # $10 min + transaction fee of $2
+      # transaction_fee = 2
+      # # minimum_balance = @current_balance - 10
+      # minimum_balance = 10
+
+      if withdraw_amount > minimum_balance # $2 transaction fee
+        puts "\nYou may not withdraw an amount that will remove your minimum $10 balance from your account.\n\nPlease note that your math wasn't necessarily wrong, but we are screwing you over to the tune of $2 per transaction on top of whatever it was you wanted to withdraw, and that probably threw it off.\n"
+      else withdraw_amount <= minimum_balance
         @current_balance = @current_balance - withdraw_amount - 2
-        puts "\nYou withdrew $#{withdraw_amount}, including a $2 transaction fee. You know this wouldn't happen at a credit union, right? But we're a bank. We're not your friends. You can't sit at our table - we own that, too.\n"
+        puts "\nYou withdrew $#{withdraw_amount}, including a $2 transaction fee.\n\nYou know this wouldn't happen at a credit union, right?\n\nBut we're a bank. We're not your friends. You can't sit at our table - we own that, too.\n"
       end
       return balance
     end
 
     def add_interest(rate)
-      @rate = (1.87/100)
-      @savings_interest = @current_balance * @rate
+      @savings_interest = @current_balance * (rate/100)
       @current_balance = @savings_interest + @current_balance
-      return @savings_interest_user_friendly
+      return savings_interest_user_friendly
     end
 
     def savings_interest_user_friendly
-      return "\nYour savings interest rate is #{@rate} and has earned you $#{@savings_interest}"
+      return "\nYou have earned $#{@savings_interest} in savings interest.\n\nNormally this would be much less, but we're friends, right?\n\nCome closer.\n\n*whispers* Hail BECU.\n\n"
     end
 
   end
@@ -135,14 +146,25 @@ end
 # account1 = Bank::Account.new("999", 5)
 
 
-account1 = Bank::Account.find("1212")
-puts account1
+# account1 = Bank::Account.find("1212")
+# puts account1
 
 # account1 = Bank::Account.all
 # puts account1
 
+account3 = Bank::SavingsAccount.new("999", 100)
+# puts account3.add_interest(1.87)
+# puts account3.withdraw(90) # < error message works
+puts account3.withdraw(88) # < working correctly
 
-# puts monies << TESTED SUCCESSFULLY
+# got savings working
+# trying to make it so that you can only withdraw in multiples of 20 up in account withdraw method, make sure that 0 is the starter to avoid that error and then make sure withdrawal % 20 = 0
+# make sure you git push origin Wave-3 so you don't overwrite a ton of shit
+# work on checking next
+
+
+
+# puts monies
 # puts monies.balance
 # puts account1.withdraw(3)
 # puts account1.deposit(2)
