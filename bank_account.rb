@@ -6,19 +6,19 @@ module Bank
 
   # class Bank
   #
-  #   # def initialize
-  #   #
-  #   #   CSV.open("accounts.csv", 'r').each do |line|
-  #   #     id_key = line[0]
-  #   #     # line.delete_at(0) < if I need to show everythingb but id
-  #   #     @all_accounts[id_key] = line
-  #   #   end
-  #   #
-  #   #   @all_accounts = {}
-  #   #   return @all_accounts
-  #   # end
-  #
-  #   # ^^ BETTER METHOD THAN USING @@
+    # def initialize
+    #
+    #   CSV.open("accounts.csv", 'r').each do |line|
+    #     id_key = line[0]
+    #     # line.delete_at(0) < if I need to show everything but id
+    #     @all_accounts[id_key] = line
+    #   end
+    #
+    #   @all_accounts = {}
+    #   return @all_accounts
+    # end
+
+    # ^^ BETTER METHOD THAN USING @@
   #
   # end
 
@@ -73,6 +73,7 @@ module Bank
     end
 
     def withdraw(withdrawal_amount)
+    # def withdraw(withdrawal_amount, fee = 0, limit = 10) etc
       if withdrawal_amount == 0
         puts "\nAre you withdrawing nothing in symbolic protest? Yeah, you stick it to the man!!\n"
       elsif withdrawal_amount > @current_balance
